@@ -1,0 +1,54 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: piotrbec
+ * Date: 2019-04-03
+ * Time: 14:59
+ */
+
+$form->setAttribute('action', $this->url('foodconfig/role', [
+    'action' => 'update',
+    'id'    => $id
+]));
+$form->get('submit')->setValue('Uaktualnij');
+$form->prepare();
+?>
+
+<div class="row">
+    <div class="col-md-offset-3 col-md-6">
+        <?= $this->partial('partial/messages') ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">Edytuj Role</div>
+            <div class="panel-body">
+                <p>Wypełnij pola i kliknij <i>Uaktualnij</i></p>
+
+                <?= $this->form()->openTag($form); ?>
+
+                <div class="form-group">
+                    <?= $this->formLabel($form->get('name')); ?>
+                    <?= $this->formElement($form->get('name')); ?>
+                    <?= $this->formElementErrors($form->get('name')); ?>
+                </div>
+
+                <div class="form-group">
+                    <?= $this->formLabel($form->get('description')); ?>
+                    <?= $this->formElement($form->get('description')); ?>
+                    <?= $this->formElementErrors($form->get('description')); ?>
+                </div>
+
+                <?php if (!empty($this->acl_config)) : ?>
+                    <?php foreach ($this->acl_config as $value) : ?>
+                        <div class="form-group">
+                            <?= $this->formLabel($form->get($value['resource'])); ?>
+                            <div><?= $this->formElement($form->get($value['resource'])) ?></div>
+                        </div>
+                    <?php endforeach ?>
+                <?php endif ?>
+
+                <?= $this->formElement($form->get('submit')); ?>
+
+                <?= $this->form()->closeTag(); ?>
+            </div>
+        </div>
+    </div>
+</div>

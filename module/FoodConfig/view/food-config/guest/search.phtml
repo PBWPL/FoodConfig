@@ -1,0 +1,239 @@
+<?php
+$this->headTitle('Strona główna');
+$this->headScript()->prependFile($this->basePath('js/search.js?t=2'));
+$this->headScript()->prependFile('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js');
+$this->headScript()->prependFile('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js');
+$this->headScript()->prependFile('https://unpkg.com/sweetalert/dist/sweetalert.min.js');
+$this->headLink()->prependStylesheet('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css');
+$this->headLink()->prependStylesheet('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css');
+$this->headLink()->prependStylesheet($this->basePath('css/search.min.css'));
+?>
+
+<?= $this->partial('partial/messages') ?>
+<div id="ajax-container">
+    <div class="container">
+        <form class="filters" action="" method="POST" onsubmit="return search()" id="search-filters">
+            <input type="hidden" class="page" name="page" value="<?= $this->page ?>" />
+
+            <div class="searchbar">
+                <input class="search_input" type="text" autocomplete="off" value="" placeholder="Wyszukaj danie" name="query" onkeydown="return searchQuery(this.value)" />
+                <a class="glyphicon glyphicon-search search_icon"></a>
+            </div>
+
+            <button class="glyphicon glyphicon-arrow-down center-block" onclick="jQuery('.hidexx').toggleClass('hide')"></button>
+
+            <div class="hidexx hide">
+
+                <div class="diets">
+                    <h3>Diety</h3>
+                    <?php foreach($this->diets as $d) { ?>
+                        <label>
+                            <input type="checkbox" name="diet[]" value="<?= $d->getId(); ?>" onchange="return search()"> <?= $d->getName() ?>
+                        </label>
+                    <?php } ?>
+                </div>
+
+                <div class="difficulties">
+                    <h3>Trudność wykonania</h3>
+                    <?php foreach($this->difficulties as $d) { ?>
+                        <label>
+                            <input type="checkbox" name="difficulty[]" value="<?= $d->getId(); ?>" onchange="return search()"> <?= $d->getName() ?>
+                        </label>
+                    <?php } ?>
+                </div>
+
+                <div class="preparation_time">
+                    <h3>Czas przygotowania</h3>
+                        <label>
+                            <input type="radio" name="preparation_time" value="1" onchange="return search()"> Do 30 min
+                        </label>
+                    <label>
+                        <input type="radio" name="preparation_time" value="2" onchange="return search()"> 30-60min
+                    </label>
+                    <label>
+                        <input type="radio" name="preparation_time" value="3" onchange="return search()"> Od 30min
+                    </label>
+                </div>
+
+                <div class="types">
+                    <h3>Typ</h3>
+                    <?php foreach($this->types as $d) { ?>
+                        <label>
+                            <input type="checkbox" name="type[]" value="<?= $d->getId(); ?>" onchange="return search()"> <?= $d->getName() ?>
+                        </label>
+                    <?php } ?>
+                </div>
+
+                <div class="events">
+                    <h3>Na specjalne okazje</h3>
+                    <?php foreach($this->events as $d) { ?>
+                        <label>
+                            <input type="checkbox" name="event[]" value="<?= $d->getId(); ?>" onchange="return search()"> <?= $d->getName() ?>
+                        </label>
+                    <?php } ?>
+                </div>
+
+                <div class="cuisines">
+                    <h3>Kuchnia świata</h3>
+                    <?php foreach($this->cuisines as $d) { ?>
+                        <label>
+                            <input type="checkbox" name="cuisine[]" value="<?= $d->getId(); ?>" onchange="return search()"> <?= $d->getName() ?>
+                        </label>
+                    <?php } ?>
+                </div>
+
+                <div class="ingredients">
+                    <h3>Składniki</h3>
+                    <select multiple style="width: 400px" class="js-data-example-ajax" id="select--ingredients" name="ingredient[]" onchange="return search()"></select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="position: relative">
+        <div id="loader" style="display: none; position: absolute; top:0; left:0; width: 100%; z-index:10; height: 100%; background:rgba(255,255,255,.75)">
+            <div style="position: absolute; top: 50%; left: 50%; margin-left: -30px; margin-top: -30px;">
+              <div class="spinner-border" style="font-size: 50px; width: 60px; height: 60px;" role="status">
+                  Loading...
+              </div>
+            </div>
+        </div>
+        <div class="results">
+            <div>
+                Znaleziono: <?php if ($this->count_dish != 1) echo $this->count_dish . ' ' . 'dań'; else echo $this->count_dish . ' ' . 'danie' ?>
+            </div>
+            <div class="card-deck">
+                <?php $i == 0; foreach ($this->paginator as $key => $val) : ?>
+                <?php if ($i % 3 == 0) : ?>
+                <div class="row"><?php endif ?>
+                    <div class="dish-<?= $val->getId(); ?> col-md-4">
+                        <div class="thumbnail" style="padding-bottom: 10px">
+                            <a class="image" href="<?= $this->url('dish',['action' => 'dish']); ?>/<?= $val->getId(); ?>">
+                                <?php if(strstr($val->getPicture(),".jpg") ==true OR strstr($val->getPicture(),".png") ==true) {
+                                    $picture=$val->getPicture();
+                                } else {
+                                    $picture = 'default.png';
+                                } ?>
+                                <img src="<?= $this->basePath('img/dish/' . $picture) ?>" alt="img">
+                            </a>
+                            <div class="caption">
+                                <table class="table table-striped table-bordered table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th>Czas</th>
+                                        <?php if($val->getQuantity()) { ?><th>Ilość</th><?php } ?>
+                                        <th>Data dodania</th>
+                                        <?php if($this->user) : ?>
+                                            <th></th>
+                                            <?php if($this->user->getLevel() == 2) : ?>
+                                                <th></th>
+                                            <?php endif ?>
+                                        <?php endif ?>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="dish-<?= $val->getId(); ?>">
+                                        <td><?= $this->escapeHtml($val->getPreparationTime()) ?></td>
+                                        <?php if($val->getQuantity()) { ?><td><?= $this->escapeHtml($val->getQuantity()) ?></td><?php } ?>
+                                        <td><?= $this->escapeHtml(date('d-m-Y', strtotime($val->getCreateTime()))) ?></td>
+                                        <?php if($this->user) : ?>
+                                        <td>
+                                            <i class="like glyphicon glyphicon-star <?php if($user->checkIfUserLikedDish($val->getId())) echo 'active'; ?>"
+                                               onClick="return <?php if($this->user->checkIfUserLikedDish($val->getId())) : echo 'remove'; else : echo 'add'; endif ?>Like(<?= $val->getId(); ?>)"></i>
+                                        </td>
+                                        <?php if($this->user->getLevel() == 2) : ?>
+                                            <td>
+                                                <i class="remove glyphicon glyphicon-remove-circle" onClick="return removeDish(<?= $val->getId(); ?>)"></i>
+                                            </td>
+                                        <?php endif ?>
+                                        <?php endif ?>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <a class="describtion" href="<?= $this->url('dish',['action' => 'dish']); ?>/<?= $val->getId(); ?>">
+                                    <h3><?= $this->escapeHtml($val->getName()) ?></h3>
+                                    <p><?= $this->escapeHtml($val->getShort()) ?></p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php $i= $i+1; if ($i % 3 == 0) : ?>
+                </div><?php endif; ?>
+                <?php endforeach ?>
+            </div>
+
+            <nav class="container pagination-foodconfig">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link"
+                        <?php if ($this->page > 1) : ?>
+                            onclick="return window.search(<?= $this->page-1 ?>)"
+                            href="<?= '/?page=' . ($this->page-1) ?>"
+                        <?php endif ?>
+                    ><span class="glyphicon glyphicon-chevron-left"></span></a>
+                </li>
+                    <?php if ($this->page != 1 && $this->page != 2) : ?>
+                        <li class="page-item search">
+                            <a class="page-link" href="<?= '/?page=' . '1' ?>" onclick="return window.search(1)">1</a>
+                            <span>...</span>
+                        </li>
+                    <?php endif ?>
+                <?php if ($this->page > 1) : ?>
+                    <li class="page-item"><a class="page-link" onclick="return window.search(<?= $this->page-1 ?>)" href="/?page=<?= $this->page-1 ?><?php if (!empty($this->tag)) echo "?search=$this->tag" ?>"><?= $this->page-1 ?></a></li>
+                <?php endif ?>
+                <li class="page-item active">
+                  <span class="page-link">
+                    <?= $this->page ?>
+                    <span class="sr-only">(current)</span>
+                  </span>
+                </li>
+                <?php if ($this->page < $this->count_page) : ?>
+                    <li class="page-item"><a class="page-link" href="/?page=<?= $this->page+1 ?><?php if (!empty($this->tag)) echo "?search=$this->tag" ?>" onclick="return window.search(<?= $this->page+1 ?>)"><?= $this->page+1 ?></a></li>
+                <?php endif ?>
+                    <?php if (($this->page != $this->count_page && $this->page != $this->count_page-1) && $this->count_page !=0) : ?>
+                        <li class="page-item search">
+                            <span>...</span>
+                            <a class="page-link" href="<?= '/?page=' . ($this->count_page) ?>" onclick="return window.search(<?= $this->count_page ?>)">
+                                <?= $this->count_page ?></a>
+                        <li class="page-item">
+                    <?php endif ?>
+                <li class="page-item">
+                    <a class="page-link"
+                        <?php if ($this->page < $this->count_page) : ?>
+                            href="<?= '/?page=' . ($this->page+1) ?><?php if (!empty($this->tag)) echo "?search=$this->tag" ?>" onclick="return window.search(<?= $this->page+1 ?>)"
+                        <?php endif ?>
+                    ><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </li>
+            </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+    var tm1;
+    function searchQuery(val) {
+        if(val && val.length >= 3)
+        {
+            if(tm1) clearTimeout(tm1);
+            var tm1 = setTimeout(search, 500);
+        }
+    }
+
+    jQuery(function($) {
+        $('#select--ingredients').select2({
+            multiple: true,
+            ajax: {
+                url: '/',
+                data: function (params) {
+                    var query = {
+                        query: params.term,
+                        type: 'public'
+                    }
+
+                    return query;
+                }
+            }
+        });
+    });
+</script>

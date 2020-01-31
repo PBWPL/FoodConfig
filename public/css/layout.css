@@ -1,0 +1,52 @@
+nav {
+  transition: 1.5s;
+}
+nav .navbar-brand > img {
+  display: inline;
+  margin-top: -2px;
+}
+nav .navbar-right {
+  margin-right: unset;
+}
+
+.page {
+  padding-top: 50px;
+  min-height: 100vh;
+}
+.page .clean-form {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.page-footer {
+  padding-top: 40px;
+}
+.page-footer .navbar-left {
+  margin-right: unset;
+}
+.page-footer .navbar-right {
+  margin-right: unset;
+}
+.page-footer .footer-copyright {
+  vertical-align: center;
+  text-align: center;
+  color: #9d9d9d;
+}
+.page-footer .footer-copyright .navbar-brand > img {
+  display: inline;
+}
+.page-footer .footer-copyright .navbar-brand {
+  float: unset;
+  padding: unset;
+  font-size: unset;
+}
+.page-footer .footer-nav {
+  padding: 3em;
+  float: unset;
+  margin-bottom: unset;
+  text-align: center;
+  border-bottom-left-radius: unset !important;
+  border-bottom-right-radius: unset !important;
+}
+
+/*# sourceMappingURL=layout.css.map */

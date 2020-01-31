@@ -1,0 +1,102 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: piotrbec
+ * Date: 2019-05-18
+ * Time: 20:36
+ */
+?>
+
+<?php
+$this->headTitle('Dania');
+$this->headScript()->prependFile('https://unpkg.com/sweetalert/dist/sweetalert.min.js');
+$this->headScript()->prependFile('https://unpkg.com/jspdf@latest/dist/jspdf.min.js');
+$this->headScript()->prependFile($this->basePath('js/dish.js'));
+$this->headScript()->prependFile($this->basePath('js/search.js'));
+$this->headLink()->prependStylesheet($this->basePath('css/search.min.css'));
+$this->headLink()->prependStylesheet($this->basePath('css/dish.min.css'));
+?>
+
+<div class="well text-center">
+    <a>
+        <?php if(strstr($this->dish->getPicture(),".jpg") ==true OR strstr($this->dish->getPicture(),".png") ==true) {
+            $picture=$this->dish->getPicture();
+        } else {
+            $picture = 'default.png';
+        } ?>
+        <img src="<?= $this->basePath('img/dish/' . $picture) ?>" class="img-thumbnail img-responsive">
+    </a>
+    <h3><?= $this->dish->getName() ?></h3>
+    <?php if($this->dish->getDifficulty()) { ?>
+    <h4>Trudność: <?= $this->dish->getDifficulty()->getName() ?></h4>
+    <?php } ?>
+    <?php if($this->dish->getType()) { ?>
+    <h4>Typ: <?= $this->dish->getType()->getName() ?></h4>
+    <?php } ?>
+    <?php if($this->dish->getCuisine()) { ?>
+    <h4>Kuchnia: <?=  $this->dish->getCuisine()->getName() ?></h4>
+    <?php } ?>
+    <?php if($this->dish->getEvent()) { ?>
+    <h4>Event: <?php foreach($this->dish->getEvent() as $event) echo $event->getName() . ' '; ?></h4>
+    <?php } ?>
+    <table class="table table-striped table-bordered table-responsive">
+        <thead>
+        <tr>
+            <th>Czas</th>
+            <?php if($this->dish->getQuantity()) { ?><th>Ilość</th><?php } ?>
+            <th>Data dodania</th>
+            <?php if($this->user) : ?>
+                <th></th>
+                <?php if($this->user->getLevel() == 2) : ?>
+                    <th></th>
+                <?php endif ?>
+            <?php endif ?>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="dish-<?= $this->dish->getId(); ?>">
+            <td><?= $this->escapeHtml($this->dish->getPreparationTime()) ?></td>
+            <?php if($this->dish->getQuantity()) { ?><td><?= $this->escapeHtml($this->dish->getQuantity()) ?></td><?php } ?>
+            <td><?= $this->escapeHtml(date('d-m-Y', strtotime($this->dish->getCreateTime()))) ?></td>
+            <?php if($this->user) : ?>
+                <td>
+                    <i class="like glyphicon glyphicon-star <?php if($user->checkIfUserLikedDish($this->dish->getId())) echo 'active'; ?>"
+                       onClick="return <?php if($this->user->checkIfUserLikedDish($this->dish->getId())) : echo 'remove'; else : echo 'add'; endif ?>Like(<?= $this->dish->getId(); ?>)"></i>
+                </td>
+                <?php if($this->user->getLevel() == 2) : ?>
+                    <td>
+                        <i class="remove glyphicon glyphicon-remove-circle" onClick="return removeDish(<?= $this->dish->getId(); ?>)"></i>
+                    </td>
+                <?php endif ?>
+            <?php endif ?>
+        </tr>
+        </tbody>
+    </table>
+    <em>Data dodania: <?= date('Y m d', strtotime(($this->dish->getCreateTime()))) ?></em>
+    <?php if($this->user) : ?>
+        <div>
+            <a style="cursor: pointer; padding-top: 10px; font-size: 20px;" class="glyphicon glyphicon-edit" onclick="return shoppingList(<?= $this->dish->getId() ?>)"></a>
+        </div>
+    <?php endif ?>
+</div>
+
+<div class="col">
+    <div class="well">
+        <div class="flex-lg-row">
+            <h3>Składniki:</h3>
+            <ul>
+                <?php foreach ($this->dish->getIngredient() as $item => $val) : ?>
+                    <li>
+                        <?= $val->getName() . ' ' . $val->getCount(); ?>
+                    </li>
+                <?php endforeach ?>
+            </ul>
+        </div>
+    </div>
+    <div class="well">
+        <div class="content flex-lg-row">
+            <?= $this->dish->GetContent() ?>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: piotrbec
+ * Date: 2019-04-03
+ * Time: 14:56
+ */
+
+$this->headTitle('Logowanie');
+$form->setAttribute('action', $this->url('foodconfig/verify', [
+    'action' => 'login'
+]));
+$form->prepare();
+?>
+
+<div class="row">
+    <div class="col-md-offset-4 col-md-4">
+        <?= $this->partial('partial/messages') ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">Logowanie</div>
+            <div class="panel-body">
+                <?= $this->form()->openTag($form) ?>
+                <div class="form-group input-group input-group-lg">
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-user"></span>
+                  </span>
+                    <?= $this->formElement($form->get('email')) ?>
+                </div>
+                <?= $this->formElementErrors($form->get('email')) ?>
+                <div class="form-group input-group input-group-lg">
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-lock"></span>
+                  </span>
+                    <?= $this->formElement($form->get('password')) ?>
+                </div>
+                <?= $this->formElementErrors($form->get('password')) ?>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-left">
+                                <?= $this->formElement($form->get('remember_me')) ?>
+                                <span>Nie wylogowuj mnie</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-right">
+                                <a href="<?= $this->url('foodconfig/verify', [
+                                    'action' => 'forgot'
+                                ]) ?>">Nie pamiętasz hasła?</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?= $this->formElement($form->get('csrf')) ?>
+                <div class="form-group">
+                    <?= $this->formElement($form->get('submit')) ?>
+                </div>
+                <?= $this->form()->closeTag() ?>
+            </div>
+        </div>
+    </div>
+</div>

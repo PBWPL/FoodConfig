@@ -1,0 +1,22 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: piotrbec
+ * Date: 2019-04-03
+ * Time: 15:03
+ */
+?>
+
+<h1>Food Config</h1>
+
+<h2><?= $name ?></h2>
+
+<h2>Lista zakupów:</h2>
+
+<ul>
+<?php foreach ($shoppinglist as $item => $val) : ?>
+    <li>
+    <?= $val['name'] . '   ' . $val['count'] ?>
+    </li>
+<?php endforeach ?>
+</ul>

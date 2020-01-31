@@ -1,0 +1,124 @@
+<?php
+$this->headTitle('Dodanie dania');
+$this->headScript()->prependFile('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js');
+$this->headScript()->prependFile('https://cdn.ckeditor.com/ckeditor5/12.1.0/classic/ckeditor.js');
+$this->headLink()->prependStylesheet('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css');
+?>
+
+<div class="container">
+    <form class="add-dish" action="" method="POST" enctype="multipart/form-data">
+        <div>
+            <img src="<?= $this->basePath('img/dish/default.png') ?>" width="140" height="140" id="uploadPreview" class="img-thumbnail">
+            <input type="file" name="dishpic" id="uploadImage" onchange="PreviewImage()">
+        </div>
+        <div class="title">
+            <input class="form-control" name="name" type="text" value="" placeholder="Tytuł dania" />
+        </div>
+
+        <div class="short-desc">
+            <input class="form-control" name="short" type="text" value="" placeholder="Krótki opis" />
+        </div>
+
+        <textarea name="content" id="editor" placeholder="Przepis">
+        </textarea>
+        <script>
+            ClassicEditor
+                .create( document.querySelector( '#editor' ) )
+                .catch( error => {
+                    console.error( error );
+                } );
+        </script>
+
+        <div class="diets">
+            <h3>Ilość posiłków</h3>
+            <input type="number" name="quantity" min="1" max="100" value="1">
+        </div>
+        <div class="diets">
+            <h3>Czas przygotowania</h3>
+            <input type="number" name="preparationtime" min="10" max="6000" value="10">
+        </div>
+        <div class="diets">
+            <h3>Diety</h3>
+            <?php foreach($this->diets as $d) { ?>
+                <label>
+                    <input type="checkbox" name="diet[]" value="<?= $d->getId(); ?>"> <?= $d->getName() ?>
+                </label>
+            <?php } ?>
+        </div>
+
+        <div class="difficulties">
+            <h3>Trudność</h3>
+            <?php foreach($this->difficulties as $d) { ?>
+                <label>
+                    <input type="radio" name="difficulty" value="<?= $d->getId(); ?>"> <?= $d->getName() ?>
+                </label>
+            <?php } ?>
+        </div>
+
+        <div class="types">
+            <h3>Typ</h3>
+            <?php foreach($this->types as $d) { ?>
+                <label>
+                    <input type="radio" name="type" value="<?= $d->getId(); ?>"> <?= $d->getName() ?>
+                </label>
+            <?php } ?>
+        </div>
+
+        <div class="events">
+            <h3>Wydarzenie</h3>
+            <?php foreach($this->events as $d) { ?>
+                <label>
+                    <input type="checkbox" name="event[]" value="<?= $d->getId(); ?>"> <?= $d->getName() ?>
+                </label>
+            <?php } ?>
+        </div>
+
+        <div class="cuisines">
+            <h3>Kuchnia</h3>
+            <?php foreach($this->cuisines as $d) { ?>
+                <label>
+                    <input type="radio" name="cuisine" value="<?= $d->getId(); ?>"> <?= $d->getName() ?>
+                </label>
+            <?php } ?>
+        </div>
+
+        <div class="input_fields_wrap ingredients">
+            <h3>Składniki</h3>
+            <button class="add_field_button">Dodaj składnik!</button>
+            <div><input type="text" name="ingredient[]" placeholder="składnik"><input type="text" name="count[]" placeholder="ilość"/></div>
+        </div>
+<hr>
+        <input class="btn btn-primary btn-md" type="submit" value="Dodaj danie">
+
+    </form>
+</div>
+
+<script>
+    function PreviewImage() {
+        var oFReader = new FileReader();
+        oFReader.readAsDataURL(document.getElementById("uploadImage").files[0]);
+
+        oFReader.onload = function (oFREvent) {
+            document.getElementById("uploadPreview").src = oFREvent.target.result;
+        };
+    };
+
+    $(document).ready(function() {
+        var max_fields      = 20; //maximum input boxes allowed
+        var wrapper   		= $(".input_fields_wrap"); //Fields wrapper
+        var add_button      = $(".add_field_button"); //Add button ID
+
+        var x = 1; //initlal text box count
+        $(add_button).click(function(e){ //on add input button click
+            e.preventDefault();
+            if(x < max_fields){ //max input box allowed
+                x++; //text box increment
+                $(wrapper).append('<div><input type="text" name="ingredient[]" placeholder="składnik"/><input type="text" name="count[]" placeholder="ilość"/><a href="#" class="remove_field">Usuń</a></div>'); //add input box
+            }
+        });
+
+        $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+            e.preventDefault(); $(this).parent('div').remove(); x--;
+        })
+    });
+</script>

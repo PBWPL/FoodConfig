@@ -1,0 +1,52 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: piotrbec
+ * Date: 2019-05-18
+ * Time: 20:36
+ */
+?>
+
+<?php
+$this->headTitle('Profil');
+?>
+
+<style>
+    .dish_a{
+        text-decoration: none !important;
+    }
+
+    .dish_desc {
+        padding-top: 6vh;
+    }
+</style>
+
+<div class="well text-center">
+    <a>
+        <img src="img/avatar<?= $this->basePath($this->user->getAvatar()) ?>" width="140" height="140" class="img-circle">
+    </a>
+    <h3><?= $this->user->getName() . ' ' . $this->user->getSurname() ?></h3>
+    <em>Data założenia konta: <?= date('d-m-Y', strtotime(($this->user->getCreateTime()))) ?></em>
+</div>
+
+<div class="well">
+    <h4>Polubione dania:</h4>
+    <?php foreach ($this->user->getDish() as $item => $val) : ?>
+        <a class="dish_a" href="<?= $this->url('dish',['action' => 'dish']); ?>/<?= $val->getId(); ?>">
+            <div class="row flex-md-row popover-title table-bordered m-2">
+                <div class="col col-md-2">
+                    <?php if(strstr($val->getPicture(),".jpg") ==true OR strstr($val->getPicture(),".png") ==true) {
+                        $picture=$val->getPicture();
+                    } else {
+                        $picture = 'default.png';
+                    } ?>
+                    <img src="img/dish/<?= $picture ?>" width="140" height="140" class="img-rounded center-block">
+                </div>
+                <div class="col col-md-2">
+                    <p class="dish_desc text-center"><?= $val->getName() ?></p>
+                </div>
+            </div>
+        </a>
+    <?php endforeach ?>
+</div>
+
