@@ -8,10 +8,10 @@
 
 namespace FoodConfig\Event;
 
-use Zend\EventManager\EventInterface;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
-use Zend\EventManager\ListenerAggregateTrait;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\ListenerAggregateTrait;
 use FoodConfig\Service\Mail\MailTemplateMessage;
 use FoodConfig\Service\Mail\MailService;
 

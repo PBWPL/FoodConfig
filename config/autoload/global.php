@@ -11,9 +11,9 @@
  * file.
  */
 
-use Zend\Session\Storage\SessionArrayStorage;
-use Zend\Session\Validator\RemoteAddr;
-use Zend\Cache\Storage\Adapter\Filesystem;
+use Laminas\Session\Storage\SessionArrayStorage;
+use Laminas\Session\Validator\RemoteAddr;
+use Laminas\Cache\Storage\Adapter\Filesystem;
 use Doctrine\DBAL\Driver\PDOMySql\Driver as PDOMySqlDriver;
 
 return [

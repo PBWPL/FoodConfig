@@ -8,9 +8,9 @@
 
 namespace FoodConfig\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\Authentication\Result;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\ViewModel;
+use Laminas\Authentication\Result;
 use FoodConfig\Form\LoginForm;
 use FoodConfig\Form\RegisterForm;
 use FoodConfig\Entity\User;

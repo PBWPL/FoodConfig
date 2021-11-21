@@ -12,11 +12,11 @@ use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use FoodConfig\Entity\Dish;
 use FoodConfig\Entity\User;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Paginator\Paginator;
-use Zend\View\Model\ViewModel;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Paginator\Paginator;
+use Laminas\View\Model\ViewModel;
 use FoodConfig\Form\ContactForm;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\JsonModel;
 
 class GuestController extends AbstractActionController
 {

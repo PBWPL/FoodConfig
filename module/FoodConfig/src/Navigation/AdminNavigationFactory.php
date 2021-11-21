@@ -8,7 +8,7 @@
 
 namespace FoodConfig\Navigation;
 
-use Zend\Navigation\Service\AbstractNavigationFactory;
+use Laminas\Navigation\Service\AbstractNavigationFactory;
 use Interop\Container\ContainerInterface;
 
 /**
@@ -26,7 +26,7 @@ class AdminNavigationFactory extends AbstractNavigationFactory
     /**
      * @param ContainerInterface $container
      * @return array
-     * @throws \Zend\Navigation\Exception\InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     protected function getPages(ContainerInterface $container)
     {

@@ -9,8 +9,8 @@
 namespace FoodConfig;
 
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Zend\Session\SessionManager;
-use Zend\Authentication\Storage\Session as SessionStorage;
+use Laminas\Session\SessionManager;
+use Laminas\Authentication\Storage\Session as SessionStorage;
 
 return [
     'controllers' => [
@@ -75,7 +75,7 @@ return [
                 return new $requestedName($entityManager);
             },
             // AuthenticationService
-            \Zend\Authentication\AuthenticationService::class => function($container, $requestedName) {
+            \Laminas\Authentication\AuthenticationService::class => function($container, $requestedName) {
                 $sessionManager = $container->get(SessionManager::class);
                 $authStorage = new SessionStorage('Zend_Auth','session',$sessionManager);
                 $authAdapter = $container->get('auth_adapter');
@@ -97,7 +97,7 @@ return [
         'aliases' => [
             'auth_manager' => Service\AuthManager::class,
             'auth_adapter' => Service\AuthAdapter::class,
-            'auth_service' => \Zend\Authentication\AuthenticationService::class,
+            'auth_service' => \Laminas\Authentication\AuthenticationService::class,
             'acl_manager' => Service\AclManager::class,
             'mail_service'  => Service\MailService::class,
         ],

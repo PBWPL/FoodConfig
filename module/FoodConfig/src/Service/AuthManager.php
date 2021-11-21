@@ -10,7 +10,7 @@ namespace FoodConfig\Service;
 
 use FoodConfig\Entity\Role;
 use FoodConfig\Entity\User;
-use Zend\Authentication\Result;
+use Laminas\Authentication\Result;
 
 class AuthManager
 {

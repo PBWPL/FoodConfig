@@ -13,9 +13,9 @@ use FoodConfig\Entity\Dish;
 use FoodConfig\Entity\Ingredient;
 use FoodConfig\Entity\Dish_Has_Ingredient;
 use FoodConfig\Entity\Event_Has_Dish;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
 
 class DishController extends AbstractActionController
 {

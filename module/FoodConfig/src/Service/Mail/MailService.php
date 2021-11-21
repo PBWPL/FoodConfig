@@ -8,9 +8,9 @@
 
 namespace FoodConfig\Service\Mail;
 
-use Zend\Mail\Transport\Smtp as SmtpTransport;
-use Zend\Mail\Transport\SmtpOptions;
-use Zend\Mail;
+use Laminas\Mail\Transport\Smtp as SmtpTransport;
+use Laminas\Mail\Transport\SmtpOptions;
+use Laminas\Mail;
 
 class MailService
 {

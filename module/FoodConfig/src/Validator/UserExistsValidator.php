@@ -8,7 +8,7 @@
 
 namespace User\Validator;
 
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 use FoodConfig\Entity\User;
 
 /**

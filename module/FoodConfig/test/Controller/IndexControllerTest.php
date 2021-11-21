@@ -8,9 +8,9 @@
 namespace FoodConfigTest\Controller;
 
 use FoodConfig\Controller\DishController;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use Prophecy\Argument;
 
 class IndexControllerTest extends AbstractHttpControllerTestCase {}

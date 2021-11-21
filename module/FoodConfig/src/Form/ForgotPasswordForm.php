@@ -8,11 +8,11 @@
 
 namespace FoodConfig\Form;
 
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilter;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilter;
 use DoctrineModule\Validator\ObjectExists;
-use Zend\Captcha\ReCaptcha;
-use ZendService\ReCaptcha\ReCaptcha as ReCaptchaService;
+use Laminas\Captcha\ReCaptcha;
+use Laminas\ReCaptcha\ReCaptcha as ReCaptchaService;
 use FoodConfig\Entity\User;
 
 class ForgotPasswordForm extends Form
@@ -72,7 +72,7 @@ class ForgotPasswordForm extends Form
         ]);
         // Add "recapcha" field
         $this->add([
-            'type' => \Zend\Form\Element\Captcha::class,
+            'type' => \Laminas\Form\Element\Captcha::class,
             'name' => 'captcha',
             'options' => [
                 'label' => 'Udowodnij, że nie jesteś robotem:',

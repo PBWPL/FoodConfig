@@ -8,10 +8,10 @@
 
 namespace FoodConfig\Form;
 
-use Zend\Form\Form;
-use Zend\InputFilter\InputFilter;
-use Zend\Captcha\ReCaptcha;
-use ZendService\ReCaptcha\ReCaptcha as ReCaptchaService;
+use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilter;
+use Laminas\Captcha\ReCaptcha;
+use Laminas\ReCaptcha\ReCaptcha as ReCaptchaService;
 
 class ContactForm extends Form
 {
@@ -87,7 +87,7 @@ class ContactForm extends Form
 
         // Add "recapcha" field
         $this->add([
-            'type' => \Zend\Form\Element\Captcha::class,
+            'type' => \Laminas\Form\Element\Captcha::class,
             'name' => 'captcha',
             'options' => [
                 'label' => 'Udowodnij, że nie jesteś robotem:',

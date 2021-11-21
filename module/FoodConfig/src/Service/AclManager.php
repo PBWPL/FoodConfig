@@ -8,7 +8,7 @@
 
 namespace FoodConfig\Service;
 
-use Zend\Permissions\Acl\Acl as AclPermission;
+use Laminas\Permissions\Acl\Acl as AclPermission;
 
 class AclManager
 {

@@ -14,11 +14,11 @@ class MailTemplateMessage
     public function setMailTemplate($template)
     {
         // Php render
-        $resolver   = new \Zend\View\Resolver\TemplateMapResolver();
+        $resolver   = new \Laminas\View\Resolver\TemplateMapResolver();
         $resolver->setMap(array(
             'mailTemplate' => __DIR__ . '/../../../view/mail/'. $template .'.phtml'
         ));
-        $this->renderer       = new \Zend\View\Renderer\PhpRenderer();
+        $this->renderer       = new \Laminas\View\Renderer\PhpRenderer();
         $this->renderer->setResolver($resolver);
         return $this;
     }
@@ -31,11 +31,11 @@ class MailTemplateMessage
     }
     public function message(array $data = [])
     {
-        $viewModel  = new \Zend\View\Model\ViewModel();
+        $viewModel  = new \Laminas\View\Model\ViewModel();
         $viewModel->setTemplate('mailTemplate')->setVariables($data);
 
-        $bodyPart			= new \Zend\Mime\Message();
-        $bodyMessage    	= new \Zend\Mime\Part($this->getMailTemplate()->render($viewModel));
+        $bodyPart			= new \Laminas\Mime\Message();
+        $bodyMessage    	= new \Laminas\Mime\Part($this->getMailTemplate()->render($viewModel));
         $bodyMessage->type  = 'text/html';
         $bodyPart->setParts(array($bodyMessage));
         return $bodyPart;
