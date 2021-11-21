@@ -13,4 +13,12 @@ use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use Prophecy\Argument;
 
-class IndexControllerTest extends AbstractHttpControllerTestCase {}
+class IndexControllerTest extends AbstractHttpControllerTestCase {
+    /**
+    * @test
+    */
+    public function returnZero()
+        {
+            $this->assertEquals(0, 0);
+        }
+}

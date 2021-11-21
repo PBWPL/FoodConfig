@@ -11,9 +11,9 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.3|^8.0",
-        "laminas/laminas-component-installer": "^1.0 || ^0.7 || ^1.0.0-dev@dev",
+        "laminas/laminas-component-installer": "^2.5.1",
         "laminas/laminas-mvc": "^3.0.1",
-        "composer-plugin-api": "^1.0 |  ^2.0",
+        "composer-plugin-api": "^2.0",
         "laminas/laminas-development-mode": "^3.0",
         "laminas/laminas-cache": "^2.7.1",
         "laminas/laminas-db": "^2.8.1",
