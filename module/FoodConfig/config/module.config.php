@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -16,7 +17,7 @@ return [
     'controllers' => [
         'factories' => [
             // VerifyController
-            Controller\VerifyController::class => function($container, $requestedName) {
+            Controller\VerifyController::class => function ($container, $requestedName) {
                 $authManager = $container->get('auth_manager');
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 $config = $container->get('config');
@@ -25,14 +26,14 @@ return [
                 return new $requestedName($authManager, $entityManager, $recapchaKey, $mailService);
             },
             // RoleController
-            Controller\RoleController::class => function($container, $requestedName) {
+            Controller\RoleController::class => function ($container, $requestedName) {
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 $config = $container->get('config');
                 $aclConfig = $config['acl_config'];
                 return new $requestedName($aclConfig, $entityManager);
             },
             // UserController
-            Controller\UserController::class => function($container, $requestedName) {
+            Controller\UserController::class => function ($container, $requestedName) {
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 $authManager = $container->get('auth_manager');
                 $config = $container->get('config');
@@ -41,7 +42,7 @@ return [
                 return new $requestedName($aclConfig, $mailService, $entityManager, $authManager);
             },
             // IndexController
-            Controller\DishController::class => function($container, $requestedName) {
+            Controller\DishController::class => function ($container, $requestedName) {
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 $authManager = $container->get('auth_manager');
                 $config = $container->get('config');
@@ -49,7 +50,7 @@ return [
                 return new $requestedName($aclConfig, $entityManager, $authManager);
             },
             // GuestController
-            Controller\GuestController::class => function($container, $requestedName) {
+            Controller\GuestController::class => function ($container, $requestedName) {
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 $config = $container->get('config');
                 $aclConfig = $config['acl_config'];
@@ -63,33 +64,33 @@ return [
     'service_manager' => [
         'factories' => [
             // AuthManager
-            Service\AuthManager::class => function($container, $requestedName) {
+            Service\AuthManager::class => function ($container, $requestedName) {
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 $authService = $container->get('auth_service');
                 $sessionManager = $container->get(SessionManager::class);
                 return new $requestedName($authService, $sessionManager, $entityManager);
             },
             // AuthAdapter
-            Service\AuthAdapter::class => function($container, $requestedName) {
+            Service\AuthAdapter::class => function ($container, $requestedName) {
                 $entityManager = $container->get('doctrine.entitymanager.orm_default');
                 return new $requestedName($entityManager);
             },
             // AuthenticationService
-            \Laminas\Authentication\AuthenticationService::class => function($container, $requestedName) {
+            \Laminas\Authentication\AuthenticationService::class => function ($container, $requestedName) {
                 $sessionManager = $container->get(SessionManager::class);
-                $authStorage = new SessionStorage('Zend_Auth','session',$sessionManager);
+                $authStorage = new SessionStorage('Zend_Auth', 'session', $sessionManager);
                 $authAdapter = $container->get('auth_adapter');
                 return new $requestedName($authStorage, $authAdapter);
             },
             // AclManager
-            Service\AclManager::class => function($container, $requestedName) {
+            Service\AclManager::class => function ($container, $requestedName) {
                 $authManager = $container->get('auth_manager');
                 $config = $container->get('config');
                 $aclConfig = $config['acl_config'];
                 return new $requestedName($authManager, $aclConfig);
             },
             // MailService
-            Service\MailService::class => function($container, $requestedName) {
+            Service\MailService::class => function ($container, $requestedName) {
                 return new $requestedName();
             },
             'admin_nav' => Navigation\AdminNavigationFactory::class
@@ -147,8 +148,8 @@ return [
     ],
 
     'recapcha' => [
-        'public_key' => '', // edit
-        'private_key' => '' // edit
+        'public_key' => '', // TODO: recapcha public key
+        'private_key' => '' // TODO: recapcha private key
     ],
 
     'doctrine' => [

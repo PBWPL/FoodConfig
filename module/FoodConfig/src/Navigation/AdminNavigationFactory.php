@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -32,11 +33,11 @@ class AdminNavigationFactory extends AbstractNavigationFactory
     {
         if (null === $this->pages) {
             $configuration = $container->get('config');
-            if (! isset($configuration['navigation'])) {
-                throw new Exception\InvalidArgumentException('Could not find navigation configuration key');
+            if (!isset($configuration['navigation'])) {
+                throw new \Laminas\Navigation\Exception\InvalidArgumentException('Could not find navigation configuration key');
             }
-            if (! isset($configuration['navigation'][$this->getName()])) {
-                throw new Exception\InvalidArgumentException(sprintf(
+            if (!isset($configuration['navigation'][$this->getName()])) {
+                throw new \Laminas\Navigation\Exception\InvalidArgumentException(sprintf(
                     'Failed to find a navigation container by the name "%s"',
                     $this->getName()
                 ));

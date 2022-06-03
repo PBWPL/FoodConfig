@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -20,7 +21,7 @@ class SendMailEvent implements ListenerAggregateInterface
     use ListenerAggregateTrait;
     public function attach(EventManagerInterface $events, $priority = 100)
     {
-        $shared  		   = $events->getSharedManager();
+        $shared             = $events->getSharedManager();
         $this->listeners[] = $shared->attach('FoodConfig', 'send_mail', [$this, 'onSendMail'], $priority);
         $this->listeners[] = $shared->attach('FoodConfig', 'send_mail_1', [$this, 'onSendMail_1'], $priority);
         $this->listeners[] = $shared->attach('FoodConfig', 'send_mail_2', [$this, 'onSendMail_2'], $priority);
@@ -43,7 +44,7 @@ class SendMailEvent implements ListenerAggregateInterface
         $mailTemplate = new MailTemplateMessage();
         $mailTemplate->setMailTemplate('contact');
         $data['body'] = $mailTemplate->message($e->getParams());
-        $data['email'] = ''; // edit
+        $data['email'] = ''; // TODO: email
         // mailmessage
         $mailMessage = new MailService();
         $mailMessage->setMail($data)->sendMail();
@@ -60,5 +61,4 @@ class SendMailEvent implements ListenerAggregateInterface
         $mailMessage = new MailService();
         $mailMessage->setMail($data)->sendMail();
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Global Configuration Override
  *
@@ -14,16 +15,16 @@
 use Laminas\Session\Storage\SessionArrayStorage;
 use Laminas\Session\Validator\RemoteAddr;
 use Laminas\Cache\Storage\Adapter\Filesystem;
-use Doctrine\DBAL\Driver\PDOMySql\Driver as PDOMySqlDriver;
+use Doctrine\DBAL\Driver\PDO\MySQL\Driver as PDOMySqlDriver;
 
 return [
     // Connect database global
     'db' => [
         'driver' => 'Pdo_Mysql',
-        'database' => '', // edit
-        'username' => '', // edit
-        'password' => '', // edit
-        'hostname' => '', // edit
+        'database' => 'foodconfig', // TODO: db name
+        'username' => 'foodconfig', // TODO: db user
+        'password' => '', // TODO: db password
+        'hostname' => '127.0.0.1', // TODO: db host
         'charset' => 'utf8'
     ],
 
@@ -33,10 +34,10 @@ return [
             'orm_default' => [
                 'driverClass' => PDOMySqlDriver::class,
                 'params' => [
-                    'host'     => '', // edit
-                    'user'     => '', // edit
-                    'password' => '', // edit
-                    'dbname'   => '', // edit
+                    'host'     => '127.0.0.1', // TODO: db host
+                    'user'     => 'foodconfig', // TODO: db user
+                    'password' => '', // TODO: db password
+                    'dbname'   => 'foodconfig', // TODO: db name
                 ]
             ],
         ],
@@ -44,8 +45,8 @@ return [
 
     // Session config
     'session_config' => [
-        'cookie_lifetime'     => 60*60*1, // expire (1 hour)
-        'gc_maxlifetime'      => 60*60*24*30, // store session data (1 month)
+        'cookie_lifetime'     => 60 * 60 * 1, // expire (1 hour)
+        'gc_maxlifetime'      => 60 * 60 * 24 * 30, // store session data (1 month)
     ],
 
     // Session manager config
@@ -67,14 +68,13 @@ return [
                 'name'    => Filesystem::class,
                 'options' => [
                     'cache_dir' => './data/cache', // store cached
-                    'ttl' => 60*60*1 // store cached data (1 hour)
+                    'ttl' => 60 * 60 * 1 // store cached data (1 hour)
                 ],
             ],
             'plugins' => [
                 [
                     'name' => 'serializer',
-                    'options' => [
-                    ],
+                    'options' => [],
                 ],
             ],
         ],

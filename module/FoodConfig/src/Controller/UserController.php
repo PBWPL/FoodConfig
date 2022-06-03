@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -15,6 +16,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use FoodConfig\Entity\User_Enjoy_Dish;
 use FoodConfig\Form\UserForm;
+use Throwable;
 
 class UserController extends AbstractActionController
 {
@@ -23,7 +25,8 @@ class UserController extends AbstractActionController
     protected $entityManager;
     protected $authManager;
     protected $mailService;
-    function __construct($aclConfig, $mailService, $entityManager, $authManager) {
+    function __construct($aclConfig, $mailService, $entityManager, $authManager)
+    {
         $this->aclConfig = $aclConfig;
         $this->mailService = $mailService;
         $this->entityManager = $entityManager;
@@ -47,19 +50,20 @@ class UserController extends AbstractActionController
         ]);
     }
 
-    public function profileAction() {
+    public function profileAction()
+    {
         $user = $this->authManager->getUser();
         $em = $this->entityManager;
 
         $user_enjoy_dish = $em->createQuery(
-            "SELECT u FROM FoodConfig\Entity\User_Enjoy_Dish u WHERE u.user_id = 3");
+            "SELECT u FROM FoodConfig\Entity\User_Enjoy_Dish u WHERE u.user_id = 3"
+        );
 
 
         return new ViewModel([
             'user' => $user,
             'user_enjoy_dish' => $user_enjoy_dish
         ]);
-
     }
 
     /**
@@ -70,22 +74,23 @@ class UserController extends AbstractActionController
         $form = new UserForm($this->aclConfig);
 
         return new ViewModel([
-            'acl_config'	=> $this->aclConfig,
-            'form'			=> $form
+            'acl_config'    => $this->aclConfig,
+            'form'            => $form
         ]);
     }
 
     public function storeAction()
     {
         $form = new UserForm($this->aclConfig);
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form->setData($data);
 
             // Validate form
-            if($form->isValid())
-            {
+            if ($form->isValid()) {
                 $formData = $form->getData();
                 $user = new \FoodConfig\Entity\User();
                 $user->setName($formData['name']);
@@ -109,8 +114,8 @@ class UserController extends AbstractActionController
                 }
             } else {
                 $view = new ViewModel([
-                    'form'			=> $form,
-                    'acl_config'	=> $this->aclConfig
+                    'form'            => $form,
+                    'acl_config'    => $this->aclConfig
                 ]);
                 $view->setTemplate('foodconfig/user/create');
                 return $view;
@@ -122,7 +127,7 @@ class UserController extends AbstractActionController
     public function editAction()
     {
         $id = $this->params()->fromRoute('id');
-        if (! $id) {
+        if (!$id) {
             return $this->redirect()->toRoute('foodconfig/user');
         }
         $form = new UserForm($this->aclConfig);
@@ -145,32 +150,33 @@ class UserController extends AbstractActionController
             ];
 
             $form->setData($data);
-
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->redirect()->toRoute('foodconfig/user');
         }
         return new ViewModel([
-            'id'			=> $id,
-            'form'			=> $form,
+            'id'            => $id,
+            'form'            => $form,
         ]);
     }
 
     public function updateAction()
     {
         $id = $this->params()->fromRoute('id');
-        if (! $id) {
+        if (!$id) {
             return $this->redirect()->toRoute('foodconfig/user');
         }
         // call form
         $form = new UserForm($this->aclConfig);
+
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form->setData($data);
 
             // Validate form
-            if($form->isValid())
-            {
+            if ($form->isValid()) {
                 $formData = $form->getData();
                 $user = $this->entityManager->getRepository(User::class)
                     ->findOneBy(['id' => $id]);
@@ -181,7 +187,7 @@ class UserController extends AbstractActionController
                 $user->setSurname($formData['surname']);
                 $user->setAvatar($formData['avatar']);
                 $user->setActive($formData['active']);
-                $user->setPassword(sha1('food'.$formData['password'].'config'));
+                $user->setPassword(sha1('food' . $formData['password'] . 'config'));
                 $user->setLevel($formData['level']);
                 $user->setUsershow($formData['usershow']);
                 $user->setEmail($formData['email']);
@@ -197,13 +203,13 @@ class UserController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage('Edycja użytkownika zakończona sukcesem!');
                 $this->redirect()->toRoute('foodconfig/user', [
                     'action' => 'edit',
-                    'acl_config' 	=> $this->aclConfig,
+                    'acl_config'     => $this->aclConfig,
                     'id' => $id,
                 ]);
             } else {
                 $view = new ViewModel([
-                    'form'			=> $form,
-                    'acl_config'	=> $this->aclConfig
+                    'form'            => $form,
+                    'acl_config'    => $this->aclConfig
                 ]);
                 $view->setTemplate('foodconfig/user/create');
                 return $view;
@@ -215,12 +221,12 @@ class UserController extends AbstractActionController
     public function deleteAction()
     {
         $id = $this->params()->fromRoute('id');
-        if (! $id) {
+        if (!$id) {
             return $this->redirect()->toRoute('foodconfig/user');
         }
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['id' => $id]);
-        if (! $user) {
+        if (!$user) {
             return $this->redirect()->toRoute('foodconfig/user');
         }
         $this->entityManager->remove($user);
@@ -230,11 +236,14 @@ class UserController extends AbstractActionController
         $this->redirect()->toRoute('foodconfig/user');
     }
 
-    public function likeAction() {
+    public function likeAction()
+    {
         $user = $this->authManager->checkIdentity();
 
+        /** @var \Laminas\Http\Request $request */
+        $request = $this->getRequest();
 
-        if ($this->getRequest()->isXmlHttpRequest()) {
+        if ($request->isXmlHttpRequest()) {
 
             try {
                 $pid = $this->params()->fromRoute('id', -1);
@@ -249,16 +258,13 @@ class UserController extends AbstractActionController
                 return new JsonModel([
                     'status' => 'SUCCESS'
                 ]);
-            } catch(Exception $e) {
+            } catch (Throwable $e) {
                 return new JsonModel([
                     'status' => 'ERROR',
                     'message' => ""
                 ]);
             }
-
-        }
-        else 
-        {
+        } else {
             return new JsonModel([
                 'status' => 'ERROR',
                 'message' => "Incorrect request"
@@ -266,11 +272,15 @@ class UserController extends AbstractActionController
         }
     }
 
-    public function unlikeAction() {
+    public function unlikeAction()
+    {
         $user = $this->authManager->checkIdentity();
 
-        if ($this->getRequest()->isXmlHttpRequest()) {
-            
+        /** @var \Laminas\Http\Request $request */
+        $request = $this->getRequest();
+
+        if ($request->isXmlHttpRequest()) {
+
             try {
                 $pid = $this->params()->fromRoute('id', -1);
 
@@ -286,16 +296,13 @@ class UserController extends AbstractActionController
                 return new JsonModel([
                     'status' => 'SUCCESS'
                 ]);
-            } catch(Exception $e) {
+            } catch (Throwable $e) {
                 return new JsonModel([
                     'status' => 'ERROR',
                     'message' => ''
                 ]);
             }
-
-        }
-        else 
-        {
+        } else {
             return new JsonModel([
                 'status' => 'ERROR',
                 'message' => 'Incorrect request'
@@ -303,10 +310,14 @@ class UserController extends AbstractActionController
         }
     }
 
-    public function shoppinglistAction() {
+    public function shoppinglistAction()
+    {
         $user = $this->authManager->checkIdentity();
 
-        if ($this->getRequest()->isXmlHttpRequest()) {
+        /** @var \Laminas\Http\Request $request */
+        $request = $this->getRequest();
+
+        if ($request->isXmlHttpRequest()) {
 
             try {
 
@@ -339,22 +350,17 @@ class UserController extends AbstractActionController
                 return new JsonModel([
                     'status' => 'SUCCESS'
                 ]);
-            } catch(Exception $e) {
+            } catch (Throwable $e) {
                 return new JsonModel([
                     'status' => 'ERROR',
                     'message' => ''
                 ]);
             }
-
-        }
-        else
-        {
+        } else {
             return new JsonModel([
                 'status' => 'ERROR',
                 'message' => 'Incorrect request'
             ]);
         }
-
     }
-
 }

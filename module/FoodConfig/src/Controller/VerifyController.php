@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -31,25 +32,31 @@ class VerifyController extends AbstractActionController
     public function indexAction()
     {
         $this->redirect()->toRoute('profile', [
-            'action' => 'profile']);
+            'action' => 'profile'
+        ]);
     }
 
     public function loginAction()
     {
         $form = new LoginForm();
+
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
 
             $data = $request->getPost()->toArray();
             $form->setData($data);
             // Validate form
-            if($form->isValid()) {
+            if ($form->isValid()) {
                 // Get filtered and validated data
                 $data = $form->getData();
 
-                $result = $this->authManager->login($data['email'],
-                    sha1('food'.$data['password'].'config'),
-                    $data['remember_me']);
+                $result = $this->authManager->login(
+                    $data['email'],
+                    sha1('food' . $data['password'] . 'config'),
+                    $data['remember_me']
+                );
                 switch ($result->getCode()) {
                     case Result::FAILURE_IDENTITY_NOT_FOUND:
                         /** do stuff for nonexistent identity **/
@@ -87,43 +94,43 @@ class VerifyController extends AbstractActionController
     {
         $form = new RegisterForm();
 
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
 
             $data = $request->getPost()->toArray();
             $form->setData($data);
             // Validate form
-            if($form->isValid()) {
+            if ($form->isValid()) {
                 // Get filtered and validated data
                 $data = $form->getData();
 
                 // check if email taken 
-                if($this->authManager->checkIfEmailExists($data['email']))
+                if ($this->authManager->checkIfEmailExists($data['email']))
                     $data['error'] = 'Email jest zajęty';
                 else {
 
-                    $hashedPassword = sha1('food'.$data['password_one'].'config');
+                    $hashedPassword = sha1('food' . $data['password_one'] . 'config');
 
                     $ext = '.' . strtolower(pathinfo($this->params()->fromFiles('avatar')['name'], PATHINFO_EXTENSION));
 
                     $name = date("Y_m_d") . "_" . rand(10000, 99999) . $ext;
                     $path = '/img/avatar/' . $name;
 
-                    if (strpos($name, '.jpg') OR strpos($name, '.png')) {
+                    if (strpos($name, '.jpg') or strpos($name, '.png')) {
                         move_uploaded_file($this->params()->fromFiles('avatar')['tmp_name'], PUBLIC_PATH . $path);
                     }
 
-                    if (sha1('food'.$data['password_two'].'config') == $hashedPassword) {
+                    if (sha1('food' . $data['password_two'] . 'config') == $hashedPassword) {
                         $result = $this->authManager->register($data['name'], $data['surname'], $data['email'], $hashedPassword, $data['usershow'], $name);
-                        if($result) {
+                        if ($result) {
                             $this->flashMessenger()->addSuccessMessage('Konto utworzone!');
                             $this->redirect()->toRoute('foodconfig/verify', [
                                 'action' => 'login'
                             ]);
-                        }
-                        else $data['error'] = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie ...';
-                    } else
-                    {
+                        } else $data['error'] = 'Wystąpił błąd podczas rejestracji. Spróbuj ponownie ...';
+                    } else {
                         $data['error'] = 'Hasła się nie zgadzają';
                     }
 
@@ -135,7 +142,6 @@ class VerifyController extends AbstractActionController
                     'form' => $form,
                     'test' => $data
                 ]);
-
             }
         }
         return new ViewModel([
@@ -157,8 +163,10 @@ class VerifyController extends AbstractActionController
     {
         // new form
         $form = new \FoodConfig\Form\ForgotPasswordForm($this->entityManager, $this->recapchaKey);
-        // request
+
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form->setData($data);
@@ -168,7 +176,7 @@ class VerifyController extends AbstractActionController
                 $data = $form->getData();
                 $userRepository = $this->entityManager->getRepository(User::class);
                 $user = $userRepository->findOneBy(['email' => $data['email']]);
-                $token = sha1('f'.$user->getPassword().'c');
+                $token = sha1('f' . $user->getPassword() . 'c');
                 $email = $user->getEmail();
                 $u_name = $user->getName() . ' ' . $user->getSurname();
                 $link = $_SERVER['SERVER_NAME']
@@ -189,7 +197,7 @@ class VerifyController extends AbstractActionController
         }
 
         return new ViewModel([
-            'form'		=> $form
+            'form'        => $form
         ]);
     }
 
@@ -208,7 +216,7 @@ class VerifyController extends AbstractActionController
         // get user by email
         $userRepository = $this->entityManager->getRepository(User::class);
         $user = $userRepository->findOneBy(['email' => $email]);
-        $myToken = sha1('f'.$user->getPassword().'c');
+        $myToken = sha1('f' . $user->getPassword() . 'c');
         if ($token !== $myToken) {
             return $this->redirect()->toRoute('foodconfig/verify', [
                 'action' => 'login'
@@ -216,7 +224,10 @@ class VerifyController extends AbstractActionController
         }
         // form change password
         $form = new \FoodConfig\Form\ChangePasswordForm();
+
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form = new \FoodConfig\Form\ChangePasswordForm();
@@ -224,7 +235,7 @@ class VerifyController extends AbstractActionController
             if ($form->isValid()) {
                 $data = $form->getData();
 
-                $user->setPassword(sha1('food'.$data['password'].'config'));
+                $user->setPassword(sha1('food' . $data['password'] . 'config'));
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
                 $this->flashMessenger()->addSuccessMessage('Hasło pomyślnie zmienione!');

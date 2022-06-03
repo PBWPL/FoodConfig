@@ -28,12 +28,14 @@ tbody {
 }
 
 .searchbar {
+  display: flex;
   height: 60px;
   background-color: $color_3;
   border-radius: 30px;
   padding: 10px;
 
   .search_input {
+    flex: auto;
     padding: 0 10px;
     caret-color: $color_1;
     transition: width 0.4s linear;

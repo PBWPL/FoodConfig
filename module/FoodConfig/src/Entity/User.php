@@ -97,6 +97,9 @@ class User
     }
 
     public function checkIfUserLikedDish($dishID) {
+        if ($this->getUserDishes() == null) {
+            return false;
+        }
         return in_array($dishID, array_keys($this->getUserDishes()));
     }
 

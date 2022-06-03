@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -11,6 +12,7 @@ namespace FoodConfig\Service;
 use FoodConfig\Entity\Role;
 use FoodConfig\Entity\User;
 use Laminas\Authentication\Result;
+use Throwable;
 
 class AuthManager
 {
@@ -32,7 +34,8 @@ class AuthManager
         return false;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         if ($this->authService->hasIdentity()) {
             $userRepository = $this->entityManager->getRepository(User::class);
             return $userRepository->findOneBy(['id' => $this->authService->getIdentity()['id']]);
@@ -66,15 +69,16 @@ class AuthManager
             ->setCredential($password);
         $result = $this->authService->authenticate();
         if ($result->getCode() == Result::SUCCESS && $remember == 1) {
-            $this->sessionManager->rememberMe(60*60*24*30);
+            $this->sessionManager->rememberMe(60 * 60 * 24 * 30);
         }
         return $result;
     }
 
-    public function checkIfEmailExists($email) {
+    public function checkIfEmailExists($email)
+    {
         $userRepository = $this->entityManager->getRepository(User::class);
         $user = $userRepository->findOneBy(['email' => $email]);
-        if($user) return true;
+        if ($user) return true;
         return false;
     }
 
@@ -88,7 +92,7 @@ class AuthManager
             $user->setName($name);
             $user->setSurname($surname);
             $user->setUsershow($usershow);
-            if (strpos($avatar, '.jpg') OR strpos($avatar, '.png')) {
+            if (strpos($avatar, '.jpg') or strpos($avatar, '.png')) {
                 $user->setAvatar($avatar);
             }
             $date = date("Y-m-d H:i:s");
@@ -100,11 +104,11 @@ class AuthManager
 
             // Add the entity to entity manager.
             $this->entityManager->persist($user);
-                
+
             // Apply changes to database.
             $this->entityManager->flush();
             return true;
-        } catch(Exception $e) {
+        } catch (Throwable $e) {
             echo $e->__toString();
             return false;
         }

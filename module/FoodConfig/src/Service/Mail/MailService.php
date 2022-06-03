@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -19,13 +20,12 @@ class MailService
     public function setTransport()
     {
         $options = new SmtpOptions([
-            'name' => '', // edit
-            'host' => '', // edit
+            'host' => 'smtp.gmail.com',
             'port'     => 465,
             'connection_class' => 'login',
             'connection_config' => [
-                'username' => '', // edit
-                'password' => '', // edit
+                'username' => '', // TODO: email username
+                'password' => '', // TODO: email password
                 'ssl'      => 'ssl'
             ],
         ]);
@@ -44,7 +44,7 @@ class MailService
     {
         //create and set email:
         $this->mail = new Mail\Message;
-        $this->mail->setFrom('', 'Food Config');  // edit
+        $this->mail->setFrom('', 'Food Config');  // TODO: email from
         $this->mail->addTo($data['email'], 'Customer');
         $this->mail->setSubject("wiadomość została wygenerowana automatycznie");
         $this->mail->setBody($data['body']);

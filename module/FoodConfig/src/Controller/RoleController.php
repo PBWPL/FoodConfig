@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -12,12 +13,14 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use FoodConfig\Entity\Role;
 use FoodConfig\Form\RoleForm;
+use Throwable;
 
 class RoleController extends AbstractActionController
 {
     protected $aclConfig;
     protected $entityManager;
-    function __construct($aclConfig, $entityManager) {
+    function __construct($aclConfig, $entityManager)
+    {
         $this->aclConfig = $aclConfig;
         $this->entityManager = $entityManager;
     }
@@ -37,21 +40,23 @@ class RoleController extends AbstractActionController
         $form = new RoleForm($this->aclConfig);
 
         return new ViewModel([
-            'acl_config'	=> $this->aclConfig,
-            'form'			=> $form
+            'acl_config'    => $this->aclConfig,
+            'form'            => $form
         ]);
     }
     public function storeAction()
     {
         $form = new RoleForm($this->aclConfig);
+
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form->setData($data);
 
             // Validate form
-            if($form->isValid())
-            {
+            if ($form->isValid()) {
                 $formData = $form->getData();
                 $role = new Role();
                 $role->setName($formData['name']);
@@ -75,8 +80,8 @@ class RoleController extends AbstractActionController
                 }
             } else {
                 $view = new ViewModel([
-                    'form'			=> $form,
-                    'acl_config'	=> $this->aclConfig
+                    'form'            => $form,
+                    'acl_config'    => $this->aclConfig
                 ]);
                 $view->setTemplate('foodconfig/role/create');
                 return $view;
@@ -87,7 +92,7 @@ class RoleController extends AbstractActionController
     public function editAction()
     {
         $id = $this->params()->fromRoute('id');
-        if (! $id) {
+        if (!$id) {
             return $this->redirect()->toRoute('foodconfig/role');
         }
         $form = new RoleForm($this->aclConfig);
@@ -107,32 +112,33 @@ class RoleController extends AbstractActionController
             }
 
             $form->setData($data);
-
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->redirect()->toRoute('foodconfig/role');
         }
         return new ViewModel([
-            'id'			=> $id,
-            'form'			=> $form,
-            'acl_config' 	=> $this->aclConfig
+            'id'            => $id,
+            'form'            => $form,
+            'acl_config'     => $this->aclConfig
         ]);
     }
     public function updateAction()
     {
         $id = $this->params()->fromRoute('id');
-        if (! $id) {
+        if (!$id) {
             return $this->redirect()->toRoute('foodconfig/role');
         }
         // call form
         $form = new RoleForm($this->aclConfig);
+
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form->setData($data);
 
             // Validate form
-            if($form->isValid())
-            {
+            if ($form->isValid()) {
                 $formData = $form->getData();
                 $role = $this->entityManager->getRepository(Role::class)
                     ->findOneBy(['id' => $id]);
@@ -153,13 +159,13 @@ class RoleController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage('Edycja roli zakończona sukcesem!');
                 $this->redirect()->toRoute('foodconfig/role', [
                     'action' => 'edit',
-                    'acl_config' 	=> $this->aclConfig,
+                    'acl_config'     => $this->aclConfig,
                     'id' => $id,
                 ]);
             } else {
                 $view = new ViewModel([
-                    'form'			=> $form,
-                    'acl_config'	=> $this->aclConfig
+                    'form'            => $form,
+                    'acl_config'    => $this->aclConfig
                 ]);
                 $view->setTemplate('foodconfig/role/create');
                 return $view;
@@ -171,12 +177,12 @@ class RoleController extends AbstractActionController
     public function deleteAction()
     {
         $id = $this->params()->fromRoute('id');
-        if (! $id) {
+        if (!$id) {
             return $this->redirect()->toRoute('foodconfig/role');
         }
         $role = $this->entityManager->getRepository(Role::class)
             ->findOneBy(['id' => $id]);
-        if (! $role) {
+        if (!$role) {
             return $this->redirect()->toRoute('foodconfig/role');
         }
         $this->entityManager->remove($role);

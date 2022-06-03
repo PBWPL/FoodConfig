@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -26,20 +27,20 @@ class GuestController extends AbstractActionController
     protected $aclConfig;
     protected $entityManager;
     protected $authManager;
-    function __construct($aclConfig, $entityManager, $authManager, $recapchaKey, $mailService) {
+    function __construct($aclConfig, $entityManager, $authManager, $recapchaKey, $mailService)
+    {
         $this->recapchaKey = $recapchaKey;
         $this->mailService = $mailService;
         $this->aclConfig = $aclConfig;
         $this->entityManager = $entityManager;
         $this->authManager = $authManager;
-
     }
 
     public function searchAction()
     {
         $em = $this->entityManager;
         $user = $this->authManager->getUser();
-        
+
         $tagFilter = $this->params()->fromQuery('query', '');
         $page = $this->params()->fromQuery('page', 1);
 
@@ -52,18 +53,18 @@ class GuestController extends AbstractActionController
         $ingredientFilter = $this->params()->fromQuery('ingredient', null);
 
 
-        if($_GET['type'] == 'public') {
+        if ($_GET['type'] == 'public') {
             $query = $this->params()->fromQuery('query', '');
-            $results = $em->createQueryBuilder()->select('ingredient')->from("FoodConfig\Entity\Ingredient", 'ingredient')->andWhere('ingredient.name LIKE :tag')->setParameters(array('tag' => '%'.$query.'%'))->setMaxResults(50)->getQuery()->getResult();
+            $results = $em->createQueryBuilder()->select('ingredient')->from("FoodConfig\Entity\Ingredient", 'ingredient')->andWhere('ingredient.name LIKE :tag')->setParameters(array('tag' => '%' . $query . '%'))->setMaxResults(50)->getQuery()->getResult();
 
             $res = [];
             $tmp = [];
-            foreach($results as $r) {
-                if(!in_array(strtolower($r->getName()), $tmp))
-                $res[] = [
-                    'id' => $r->getId(),
-                    'text' => $r->getName() 
-                ];
+            foreach ($results as $r) {
+                if (!in_array(strtolower($r->getName()), $tmp))
+                    $res[] = [
+                        'id' => $r->getId(),
+                        'text' => $r->getName()
+                    ];
                 $tmp[] = strtolower($r->getName());
             }
 
@@ -81,17 +82,17 @@ class GuestController extends AbstractActionController
 
         $query = $em->createQueryBuilder()->from('FoodConfig\Entity\Dish', 'dish');
 
-        if($difficultyFilter) {
+        if ($difficultyFilter) {
             //one to one
-            $query->andWhere('dish.difficulty_id IN ('.implode(',',$difficultyFilter).')');
+            $query->andWhere('dish.difficulty_id IN (' . implode(',', $difficultyFilter) . ')');
         }
 
-        if($typeFilter) {
+        if ($typeFilter) {
             //one to one
-            $query->andWhere('dish.type_id IN ('.implode(',',$typeFilter).')');
+            $query->andWhere('dish.type_id IN (' . implode(',', $typeFilter) . ')');
         }
 
-        if($preparation_timeFilter) {
+        if ($preparation_timeFilter) {
             //one to one
             if ($preparation_timeFilter == 1) {
                 $query->andWhere('dish.preparation_time <= 30');
@@ -103,133 +104,124 @@ class GuestController extends AbstractActionController
         }
 
         $eids = [];
-        if($eventFilter) {
+        if ($eventFilter) {
             //get ids of dishes, which belong to event
 
-            $_results = $em->createQueryBuilder()->select('event_has_dish')->from('FoodConfig\Entity\Event_Has_Dish', 'event_has_dish')->andWhere('event_has_dish.event_id IN ('.implode(',',$eventFilter).')')->getQuery()->getResult();
-         
+            $_results = $em->createQueryBuilder()->select('event_has_dish')->from('FoodConfig\Entity\Event_Has_Dish', 'event_has_dish')->andWhere('event_has_dish.event_id IN (' . implode(',', $eventFilter) . ')')->getQuery()->getResult();
+
             $tmp = [];
 
-            foreach($_results as $r) {
-                if(!is_array($tmp[$r->getDishId()]))
-                $tmp[$r->getDishId()] = [];
+            foreach ($_results as $r) {
+                if (!is_array($tmp[$r->getDishId()]))
+                    $tmp[$r->getDishId()] = [];
 
                 array_push($tmp[$r->getDishId()], $r->getEventId());
             }
 
-            foreach($tmp as $k => $r) {
+            foreach ($tmp as $k => $r) {
                 $flag = true;
-                foreach($eventFilter as $f) {
-                    if(!in_array($f,$r)) $flag = false;
+                foreach ($eventFilter as $f) {
+                    if (!in_array($f, $r)) $flag = false;
                 }
 
-                if($flag) 
+                if ($flag)
                     array_push($eids, $k);
             }
         }
 
         $iids = [];
-        if($ingredientFilter) {
+        if ($ingredientFilter) {
             //get ids of dishes, which belong to ingredient
 
-            $_results = $em->createQueryBuilder()->select('dish_has_ingredient')->from('FoodConfig\Entity\Dish_Has_Ingredient', 'dish_has_ingredient')->andWhere('dish_has_ingredient.ingredient_id IN ('.implode(',',$ingredientFilter).')')->getQuery()->getResult();
+            $_results = $em->createQueryBuilder()->select('dish_has_ingredient')->from('FoodConfig\Entity\Dish_Has_Ingredient', 'dish_has_ingredient')->andWhere('dish_has_ingredient.ingredient_id IN (' . implode(',', $ingredientFilter) . ')')->getQuery()->getResult();
 
             $tmp = [];
 
-            foreach($_results as $r) {
-                if(!is_array($tmp[$r->getDishId()]))
-                $tmp[$r->getDishId()] = [];
+            foreach ($_results as $r) {
+                if (!is_array($tmp[$r->getDishId()]))
+                    $tmp[$r->getDishId()] = [];
 
                 array_push($tmp[$r->getDishId()], $r->getIngredientId());
             }
 
-            foreach($tmp as $k => $r) {
+            foreach ($tmp as $k => $r) {
                 $flag = true;
-                foreach($ingredientFilter as $f) {
-                    if(!in_array($f,$r)) $flag = false;
+                foreach ($ingredientFilter as $f) {
+                    if (!in_array($f, $r)) $flag = false;
                 }
 
-                if($flag) 
+                if ($flag)
                     array_push($iids, $k);
             }
         }
 
         $dids = [];
-        if($dietFilter) {
+        if ($dietFilter) {
             //get ids of events, which belong to diet
 
-            $_results = $em->createQueryBuilder()->select('diet_has_dish')->from('FoodConfig\Entity\Diet_Has_Dish', 'diet_has_dish')->andWhere('diet_has_dish.diet_id IN ('.implode(',',$dietFilter).')')->getQuery()->getResult();
-            
-            
+            $_results = $em->createQueryBuilder()->select('diet_has_dish')->from('FoodConfig\Entity\Diet_Has_Dish', 'diet_has_dish')->andWhere('diet_has_dish.diet_id IN (' . implode(',', $dietFilter) . ')')->getQuery()->getResult();
+
+
             $tmp = [];
 
-            foreach($_results as $r) {
-                if(!is_array($tmp[$r->getDishId()]))
-                $tmp[$r->getDishId()] = [];
+            foreach ($_results as $r) {
+                if (!is_array($tmp[$r->getDishId()]))
+                    $tmp[$r->getDishId()] = [];
 
                 array_push($tmp[$r->getDishId()], $r->getDietId());
             }
 
-            foreach($tmp as $k => $r) {
+            foreach ($tmp as $k => $r) {
                 $flag = true;
-                foreach($dietFilter as $f) {
-                    if(!in_array($f,$r)) $flag = false;
+                foreach ($dietFilter as $f) {
+                    if (!in_array($f, $r)) $flag = false;
                 }
 
-                if($flag) 
+                if ($flag)
                     array_push($dids, $k);
             }
-        } 
+        }
 
 
-        if($dietFilter && $eventFilter && $ingredientFilter) {
+        if ($dietFilter && $eventFilter && $ingredientFilter) {
             //get intersection 
             $ids = array_intersect($eids, $dids, $iids);
-        }
-        else if($dietFilter && $ingredientFilter) {
+        } else if ($dietFilter && $ingredientFilter) {
             $ids = array_intersect($dids, $iids);
-        }
-        else if($dietFilter && $eventFilter) {
+        } else if ($dietFilter && $eventFilter) {
             $ids = array_intersect($dids, $eids);
-        }
-        else if($ingredientFilter && $eventFilter) {
+        } else if ($ingredientFilter && $eventFilter) {
             $ids = array_intersect($iids, $eids);
-        }
-        else if($dietFilter)
-        {
+        } else if ($dietFilter) {
             //get just diet ids
             $ids = $dids;
-        }
-        else if($eventFilter)
-        {
+        } else if ($eventFilter) {
             //get just event ids
             $ids = $eids;
-        }
-        else if($ingredientFilter)
-        {
+        } else if ($ingredientFilter) {
             //get just event ids
             $ids = $iids;
         }
 
-        if($dietFilter || $eventFilter || $ingredientFilter) {
-            if(count($ids) == 0) $query->andWhere('dish.id = -1');
-            else $query->andWhere('dish.id IN ('.implode(',', $ids).')');
+        if ($dietFilter || $eventFilter || $ingredientFilter) {
+            if (count($ids) == 0) $query->andWhere('dish.id = -1');
+            else $query->andWhere('dish.id IN (' . implode(',', $ids) . ')');
         }
 
-        if($cuisineFilter) {
+        if ($cuisineFilter) {
             //one to one
-            $query->andWhere('dish.cuisine_id IN ('.implode(',',$cuisineFilter).')');
+            $query->andWhere('dish.cuisine_id IN (' . implode(',', $cuisineFilter) . ')');
         }
 
         if ($tagFilter) {
             $tagFilter = explode(',', $tagFilter);
-            $query->andWhere('(dish.name LIKE :tag OR dish.short LIKE :tag)')->setParameters(array('tag' => '%'.$tagFilter[0].'%'));
+            $query->andWhere('(dish.name LIKE :tag OR dish.short LIKE :tag)')->setParameters(array('tag' => '%' . $tagFilter[0] . '%'));
         }
 
         //echo $query->select('count(dish.id)')->getQuery()->getSQL();
         //exit();
         $count_page = $query->select('count(dish.id)')->getQuery()->getSingleScalarResult();
-        
+
 
         $adapter = new DoctrineAdapter(new ORMPaginator($query->select('dish'), false));
         $paginator = new Paginator($adapter);
@@ -238,7 +230,7 @@ class GuestController extends AbstractActionController
         $paginator->setCurrentPageNumber($page);
 
         $count_dish = $count_page;
-        $count_page = ceil($count_page/9);
+        $count_page = ceil($count_page / 9);
 
         if ($count_dish > 0 && $page > $count_page) {
             return $this->redirect()->toRoute('search', [
@@ -267,9 +259,12 @@ class GuestController extends AbstractActionController
             'user' => $user,
             'tag' => $tagFilter
         ]);
-        
-        if ($this->getRequest()->isXmlHttpRequest()) {
-                $view->setTerminal(true);
+
+        /** @var \Laminas\Http\Request $request */
+        $request = $this->getRequest();
+
+        if ($request->isXmlHttpRequest()) {
+            $view->setTerminal(true);
         }
 
         return $view;
@@ -314,8 +309,9 @@ class GuestController extends AbstractActionController
             $form->setData($data);
         }
 
-        // request
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $data = $request->getPost()->toArray();
             $form->setData($data);
@@ -341,7 +337,7 @@ class GuestController extends AbstractActionController
         }
 
         return new ViewModel([
-            'form'		=> $form
+            'form'        => $form
         ]);
     }
 }

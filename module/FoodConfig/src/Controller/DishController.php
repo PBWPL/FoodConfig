@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: piotrbec
@@ -16,6 +17,7 @@ use FoodConfig\Entity\Event_Has_Dish;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
+use Throwable;
 
 class DishController extends AbstractActionController
 {
@@ -23,7 +25,8 @@ class DishController extends AbstractActionController
     protected $aclConfig;
     protected $entityManager;
     protected $authManager;
-    function __construct($aclConfig, $entityManager, $authManager) {
+    function __construct($aclConfig, $entityManager, $authManager)
+    {
         $this->aclConfig = $aclConfig;
         $this->entityManager = $entityManager;
         $this->authManager = $authManager;
@@ -40,9 +43,11 @@ class DishController extends AbstractActionController
         $events = $em->getRepository("FoodConfig\Entity\Event")->findAll();
         $cuisines = $em->getRepository("FoodConfig\Entity\Cuisine")->findAll();
 
+        /** @var \Laminas\Http\Request $request */
         $request = $this->getRequest();
+
         if ($request->isPost()) {
-            $data = $request->getPost()->toArray();
+            $data = $request->toarray;
 
             $dish = new Dish();
             $dish->setName($data['name']);
@@ -50,7 +55,7 @@ class DishController extends AbstractActionController
             $ext = '.' . strtolower(pathinfo($this->params()->fromFiles('dishpic')['name'], PATHINFO_EXTENSION));
             $name = date("Y_m_d") . "_" . rand(10000, 99999) . $ext;
             $path = '/img/dish/' . $name;
-            if (strpos($name, '.jpg') OR strpos($name, '.png')) {
+            if (strpos($name, '.jpg') or strpos($name, '.png')) {
                 move_uploaded_file($this->params()->fromFiles('dishpic')['tmp_name'], PUBLIC_PATH . $path);
             }
             $dish->setPicture($name);
@@ -66,21 +71,21 @@ class DishController extends AbstractActionController
             $cuisine = $em->getRepository("FoodConfig\Entity\Cuisine")->findOneBy(['id' => $data['cuisine']]);
             $type = $em->getRepository("FoodConfig\Entity\Type")->findOneBy(['id' => $data['type']]);
             $difficulty = $em->getRepository("FoodConfig\Entity\Difficulty")->findOneBy(['id' => $data['difficulty']]);
-            
+
 
             $dish->setCuisine($cuisine);
             $dish->setType($type);
             $dish->setDifficulty($difficulty);
-            
+
 
             $this->entityManager->persist($dish);
             $this->entityManager->flush();
 
             foreach ($data['event'] as $e) {
                 $event = new Event_Has_Dish();
-                
+
                 $_event = $em->getRepository("FoodConfig\Entity\Event")->findOneBy(['id' => $e]);
-                
+
                 $event->setEventId($_event->getId());
                 $event->setDishId($dish->getId());
                 $this->entityManager->persist($event);
@@ -91,23 +96,22 @@ class DishController extends AbstractActionController
                 $diet = new Diet_Has_Dish();
 
                 $_diet = $em->getRepository("FoodConfig\Entity\Diet")->findOneBy(['id' => $d]);
-                
+
                 $diet->setDietId($_diet->getId());
                 $diet->setDishId($dish->getId());
                 $this->entityManager->persist($diet);
                 $this->entityManager->flush();
             }
 
-           
+
 
             foreach ($data['ingredient'] as $k => $i) {
                 $count = (int) $data['count'][$k];
-                if(empty($i)) continue; 
-                if($data['count'][$k] <= 0) continue;
+                if (empty($i)) continue;
+                if ($data['count'][$k] <= 0) continue;
 
                 $_ingredient = $em->getRepository("FoodConfig\Entity\Ingredient")->findOneBy(['name' => $i, 'count' => $count]);
-                if(!$_ingredient) 
-                {
+                if (!$_ingredient) {
                     $_ingredient = new Ingredient();
                     $_ingredient->setName($i);
                     $_ingredient->setCount($count);
@@ -132,13 +136,12 @@ class DishController extends AbstractActionController
             'types' => $types,
             'events' => $events,
             'cuisines' => $cuisines
-            ]);
-
+        ]);
     }
 
     public function RemoveAction()
     {
-        if ($this->getRequest()->isXmlHttpRequest()) {
+        if ($this->getRequest()) {
 
             try {
                 $pid = $this->params()->fromRoute('id', -1);
@@ -156,12 +159,12 @@ class DishController extends AbstractActionController
                     'dish_id' => $pid
                 ]);
 
-                foreach($diet_has_dish as $item) {
-                    $this->entityManager->remove($item); 
+                foreach ($diet_has_dish as $item) {
+                    $this->entityManager->remove($item);
                 }
 
-                foreach($event_has_dish as $item) {
-                    $this->entityManager->remove($item); 
+                foreach ($event_has_dish as $item) {
+                    $this->entityManager->remove($item);
                 }
 
                 $this->entityManager->remove($dish);
@@ -170,16 +173,13 @@ class DishController extends AbstractActionController
                 return new JsonModel([
                     'status' => 'SUCCESS'
                 ]);
-            } catch(Exception $e) {
+            } catch (Throwable $e) {
                 return new JsonModel([
                     'status' => 'ERROR',
                     'message' => ''
                 ]);
             }
-
-        }
-        else
-        {
+        } else {
             return new JsonModel([
                 'status' => 'ERROR',
                 'message' => 'Incorrect request'
